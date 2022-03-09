@@ -1,4 +1,6 @@
 import sys
+from os import startfile, system
+from tkinter.messagebox import NO
 from nodoPersona import nodoPersona
 
 class listaPersonas:
@@ -49,6 +51,9 @@ class listaPersonas:
         while actual != None:
             if actual and actual.Persona.nombre == nombre:
                 print("Orden de:",actual.Persona.nombre,"fue despachada con éxito")
+                print("su pedido era:")
+                listaPizza = actual.Persona.getLista()
+                listaPizza.recorrer()
             actual = actual.siguiente
 
     def menuEliminar(self):
@@ -66,25 +71,28 @@ class listaPersonas:
 
     def mantenerMenuEliminar(self):
         correcto = False
+        actual = self.cabeza
         while (not correcto):
             try:
-                self.menuEliminar()
-                actual = self.cabeza
-                select = int(input("Que pedido desea eliminar:"))
-                print("\n")
-                n = 1
-                while actual != None:
-                    if select == 0:
-                        correcto = True
-                        break
-                    elif select == n:
-                        self.eliminarEleccion(actual.Persona.nombre)
-                        correcto = True
-                        break
-                    n = n+1
-                    actual=actual.siguiente
-                if select != n and select !=0:
-                    print("esa opcion no existe")
+                if actual != None:
+                    self.menuEliminar()
+                    select = int(input("Que pedido desea eliminar:"))
+                    print("\n")
+                    n = 1
+                    while actual != None:
+                        if select == 0:
+                            correcto = True
+                        elif select == n:
+                            self.eliminarEleccion(actual.Persona.nombre)
+                            correcto = True
+                            break
+                        n = n+1
+                        actual=actual.siguiente
+                    if select != n and select !=0:
+                        print("esa opcion no existe")
+                else:
+                    print("No hay personas haciendo fila, el lugar esta vacio :(")
+                    correcto = True
             except:
                 print("ocurrio un error, vuelve a intentarlo")
                 print("El error fue:", sys.exc_info()[0])
@@ -133,3 +141,65 @@ class listaPersonas:
             actual=actual.siguiente
         print("+++++++++++++++++++++++++++++++++++++++++++++++++")
 
+    def pintar(self):
+        if self.cabeza != None:
+            actual = self.cabeza.siguiente
+            lista = "Mostrador -> "+self.cabeza.Persona.nombre+"; \n"
+            lista = lista + self.cabeza.Persona.nombre +" -> "
+            while actual != None:
+                lista = lista + actual.Persona.nombre + " -> "
+                actual=actual.siguiente
+            lista = lista[:-3]
+            lista = lista + ";\n"
+            return lista
+
+    def graficar(self):
+        actual = self.cabeza
+        if actual != None:
+            try:
+                listaFila = self.pintar()
+                Archivo = open('cola.dot', 'w')
+                cabeza = '''digraph G {
+                                fontname="Arial"
+                                node [fontname="Arial" shape=box3d]
+                                edge [fontname="Arial"]
+
+                                subgraph cluster_1 {
+                                    Mostrador [shape=house];
+                                    node [style=filled fillcolor=skyblue];\n'''
+                Archivo.write(cabeza)
+                Archivo.write(listaFila)
+                luegoDelName = '''label = "FILA DE PEDIDOS";
+                                    color=red
+                                }
+                            }'''
+                Archivo.write(luegoDelName)
+                Archivo.close()
+                system('dot -Tpng cola.dot -o cola.png')
+                startfile('cola.png')
+            except:
+                print("ocurrio un error, vuelve a intentarlo")
+                print("El error fue:", sys.exc_info()[0])
+        else:
+            try:
+                listaFila = self.pintar()
+                Archivo = open('cola.dot', 'w')
+                cabeza = '''digraph G {
+                                fontname="Arial"
+                                node [fontname="Arial" shape=box3d]
+                                edge [fontname="Arial"]
+
+                                subgraph cluster_1 {
+                                    Mostrador [shape=house];
+                                    node [style=filled fillcolor=skyblue];
+                                    label = "FILA DE PEDIDOS";
+                                    color=red
+                                }
+                            }'''
+                Archivo.write(cabeza)
+                Archivo.close()
+                system('dot -Tpng cola.dot -o cola.png')
+                startfile('cola.png')
+            except:
+                print("ocurrio un error, vuelve a intentarlo")
+                print("El error fue:", sys.exc_info()[0])

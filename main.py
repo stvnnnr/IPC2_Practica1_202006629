@@ -101,8 +101,6 @@ def agregarOrden():
     print("\n")
     print("Orden tomada, espere su pedido")
     print("\n")
-    #aca iria lo de graphviz
-
 
 def mostrarMisDatos():#muestro mis datos
     print("Wilber Steven Zúñiga Ruano")
@@ -122,11 +120,13 @@ def mantenerMenuOrdenes():#metodo para entrar y mantener menu de ordenes
                 mantenerMenuRecorrer()
             elif select == 2:
                 listaPeople.eliminarPrimero()
-                #graphviz
+                listaPeople.graficar()
             elif select == 3:
                 agregarOrden()
+                listaPeople.graficar()
             elif select == 4:
                 listaPeople.mantenerMenuEliminar()
+                listaPeople.graficar()
             elif select == 0:
                 print("volviendo...")
                 break
